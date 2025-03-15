@@ -10,13 +10,15 @@ using namespace std;
 class PrimMST {
 private:
     int graph[V][V]; // Adjacency matrix
+    vector<string> departmentNames; // Stores names of departments
 
 public:
-    // Constructor to initialize the graph
-    PrimMST(int inputGraph[V][V]) {
+    // Constructor to initialize the graph and department names
+    PrimMST(int inputGraph[V][V], vector<string> names) {
         for (int i = 0; i < V; i++)
             for (int j = 0; j < V; j++)
                 graph[i][j] = inputGraph[i][j];
+        departmentNames = names;
     }
 
     // Function to find the vertex with minimum key value
@@ -37,7 +39,7 @@ public:
         vector<int> key(V, INF);     // Stores minimum weight to reach a vertex
         vector<bool> inMST(V, false); // Tracks if a vertex is in MST
 
-        key[0] = 0; // Start from department 0 (CS)
+        key[0] = 0; // Start from the first department (CS)
 
         for (int count = 0; count < V - 1; count++) {
             int u = findMinKey(key, inMST);
@@ -51,11 +53,12 @@ public:
             }
         }
 
-        // Print MST
+        // Print MST with department names
         cout << "Minimum Spanning Tree (MST) of College Campus:\n";
         int totalDistance = 0;
         for (int i = 1; i < V; i++) {
-            cout << "Dept " << parent[i] << " - Dept " << i << "  Distance: " << graph[parent[i]][i] << " meters\n";
+            cout << departmentNames[parent[i]] << " - " << departmentNames[i] 
+                 << "  Distance: " << graph[parent[i]][i] << " meters\n";
             totalDistance += graph[parent[i]][i];
         }
         cout << "Total Minimum Distance to Connect All Departments: " << totalDistance << " meters\n";
@@ -63,7 +66,7 @@ public:
 };
 
 int main() {
-    // Given adjacency matrix
+    // Given adjacency matrix (distances between departments)
     int inputGraph[V][V] = {
         {  0, 50, 80,  0,  0 }, // CS
         { 50,  0, 30, 60,  0 }, // IT
@@ -72,7 +75,10 @@ int main() {
         {  0,  0, 70, 20,  0 }  // MECH
     };
 
-    PrimMST campus(inputGraph);
+    // Department names corresponding to indices
+    vector<string> departmentNames = {"CS", "IT", "ENTC", "AIML", "MECH"};
+
+    PrimMST campus(inputGraph, departmentNames);
     campus.findMST();
 
     return 0;
