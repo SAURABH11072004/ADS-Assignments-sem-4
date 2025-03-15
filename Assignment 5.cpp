@@ -9,15 +9,17 @@ using namespace std;
 
 class DijkstraSCM {
 private:
-    vector<vector<int>> graph; // Adjacency matrix representing transportation costs
+    vector<vector<int>> graph;
+    vector<string> locationNames; // Stores names of locations
 
 public:
-    // Constructor to initialize the supply chain graph
-    DijkstraSCM(vector<vector<int>> &inputGraph) {
+    // Constructor to initialize the supply chain graph and location names
+    DijkstraSCM(vector<vector<int>> &inputGraph, vector<string> names) {
         graph = inputGraph;
+        locationNames = names;
     }
 
-    // Function to find the vertex with minimum distance value
+    // Function to find the vertex with the minimum distance value
     int findMinDistance(vector<int> &dist, vector<bool> &visited) {
         int minValue = INF, minIndex = -1;
         for (int i = 0; i < V; i++) {
@@ -31,9 +33,9 @@ public:
 
     // Dijkstra's Algorithm to find the shortest transportation path
     void findShortestPath(int src) {
-        vector<int> dist(V, INF);    // Stores shortest distance from src
-        vector<bool> visited(V, false); // Tracks visited nodes
-        vector<int> parent(V, -1);   // Stores shortest path tree
+        vector<int> dist(V, INF);
+        vector<bool> visited(V, false);
+        vector<int> parent(V, -1);
 
         dist[src] = 0; // Distance to itself is zero
 
@@ -49,14 +51,14 @@ public:
             }
         }
 
-        // Print the shortest path results
-        cout << "Shortest Transportation Path from Source (Location " << src << "):\n";
+        // Print the shortest path results with names
+        cout << "Shortest Transportation Path from Source (" << locationNames[src] << "):\n";
         for (int i = 0; i < V; i++) {
-            cout << "To Location " << i << " - Distance: " << dist[i] << " | Path: ";
+            cout << "To " << locationNames[i] << " - Distance: " << dist[i] << " | Path: ";
             int temp = i;
-            vector<int> path;
+            vector<string> path;
             while (temp != -1) {
-                path.push_back(temp);
+                path.push_back(locationNames[temp]);
                 temp = parent[temp];
             }
             for (int j = path.size() - 1; j >= 0; j--) {
@@ -77,8 +79,14 @@ int main() {
         {0, 20, 0, 0, 50, 0}    // Retail Store 2
     };
 
-    DijkstraSCM scm(supplyChainGraph);
-    int source = 0; // Start from supplier (Location 0)
+    // Names corresponding to locations
+    vector<string> locationNames = {
+        "Supplier", "Warehouse", "Distribution Center 1", 
+        "Distribution Center 2", "Retail Store 1", "Retail Store 2"
+    };
+
+    DijkstraSCM scm(supplyChainGraph, locationNames);
+    int source = 0; // Start from "Supplier"
     scm.findShortestPath(source);
 
     return 0;
