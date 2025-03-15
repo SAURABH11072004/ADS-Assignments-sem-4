@@ -9,10 +9,12 @@ using namespace std;
 class KruskalMST {
 private:
     vector<vector<int>> edges; // Stores {weight, u, v}
+    vector<string> departments; // Stores department names
 
 public:
     // Constructor to initialize the graph from adjacency matrix
-    KruskalMST(int inputGraph[V][V]) {
+    KruskalMST(int inputGraph[V][V], vector<string> deptNames) {
+        departments = deptNames; // Assign department names
         for (int i = 0; i < V; i++) {
             for (int j = i + 1; j < V; j++) {
                 if (inputGraph[i][j] != 0) {
@@ -46,44 +48,47 @@ public:
     }
 
     // Function to find the Minimum Spanning Tree (MST) using Kruskal's Algorithm
-   void findMST() {
-    sort(edges.begin(), edges.end());
-    vector<int> parent(V, -1);
-    vector<int> rank(V, 0);
-    
-    vector<vector<int>> mst; // Store {u, v, weight}
-    int totalDistance = 0;
+    void findMST() {
+        sort(edges.begin(), edges.end()); // Sort edges by weight (first element)
+        vector<int> parent(V, -1);
+        vector<int> rank(V, 0);
+        
+        vector<vector<int>> mst; // Store {u, v, weight}
+        int totalDistance = 0;
 
-    for (auto &edge : edges) {
-        int weight = edge[0], u = edge[1], v = edge[2];
-        if (find(parent, u) != find(parent, v)) {
-            unionSet(parent, rank, u, v);
-            mst.push_back({u, v, weight}); // Include weight
-            totalDistance += weight;
+        for (auto &edge : edges) {
+            int weight = edge[0], u = edge[1], v = edge[2];
+            if (find(parent, u) != find(parent, v)) {
+                unionSet(parent, rank, u, v);
+                mst.push_back({u, v, weight}); // Include weight
+                totalDistance += weight;
+            }
         }
-    }
 
-    // Print MST with correct weights
-    cout << "Minimum Spanning Tree (MST) of College Campus:\n";
-    for (auto &e : mst) {
-        cout << "Dept " << e[0] << " - Dept " << e[1] 
-             << "  Distance: " << e[2] << " meters\n";
+        // Print MST with department names
+        cout << "Minimum Spanning Tree (MST) of College Campus:\n";
+        for (auto &e : mst) {
+            cout << departments[e[0]] << " - " << departments[e[1]] 
+                 << "  Distance: " << e[2] << " meters\n";
+        }
+        cout << "Total Minimum Distance: " << totalDistance << " meters\n";
     }
-    cout << "Total Minimum Distance: " << totalDistance << " meters\n";
-}
 };
 
 int main() {
     // Given adjacency matrix
     int inputGraph[V][V] = {
-      { 0, 2, 0, 6, 0 },
-{ 2, 0, 3, 8, 5 },
-{ 0, 3, 0, 0, 7 },
-{ 6, 8, 0, 0, 9 },
-{ 0, 5, 7, 9, 0 } // MECH
+        { 0, 2, 0, 6, 0 },//CS
+        { 2, 0, 3, 8, 5 },//IT
+        { 0, 3, 0, 0, 7 },//ENTC
+        { 6, 8, 0, 0, 9 },//AIML
+        { 0, 5, 7, 9, 0 }//MECH
     };
 
-    KruskalMST campus(inputGraph);
+    // Department names
+    vector<string> departments = {"CS", "IT", "ENTC", "AIML", "MECH"};
+
+    KruskalMST campus(inputGraph, departments);
     campus.findMST();
 
     return 0;
