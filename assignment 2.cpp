@@ -10,7 +10,6 @@ public:
     Player* right;
     int height;
 
-    // Constructor
     Player(int id, int sc) {
         player_id = id;
         score = sc;
@@ -40,7 +39,6 @@ private:
         y->left = x->right;
         x->right = y;
 
-        // Update heights
         y->height = max(getHeight(y->left), getHeight(y->right)) + 1;
         x->height = max(getHeight(x->left), getHeight(x->right)) + 1;
 
@@ -53,7 +51,6 @@ private:
         x->right = y->left;
         y->left = x;
 
-        // Update heights
         x->height = max(getHeight(x->left), getHeight(x->right)) + 1;
         y->height = max(getHeight(y->left), getHeight(y->right)) + 1;
 
@@ -65,29 +62,23 @@ private:
         if (node == nullptr)
             return new Player(id, score);
 
-        if (id < node->player_id)
+        if (score < node->score)
             node->left = insertPlayer(node->left, id, score);
-        else if (id > node->player_id)
+        else
             node->right = insertPlayer(node->right, id, score);
-        else {
-            cout << "Player ID already exists! Try again.\n";
-            return node; // Duplicate IDs not allowed
-        }
 
-        // Update height
         node->height = max(getHeight(node->left), getHeight(node->right)) + 1;
         int balance = getBalanceFactor(node);
 
-        // Perform rotations if unbalanced
-        if (balance > 1 && id < node->left->player_id) // Left Left Case
+        if (balance > 1 && score < node->left->score)
             return rotateRight(node);
-        if (balance < -1 && id > node->right->player_id) // Right Right Case
+        if (balance < -1 && score > node->right->score)
             return rotateLeft(node);
-        if (balance > 1 && id > node->left->player_id) { // Left Right Case
+        if (balance > 1 && score > node->left->score) {
             node->left = rotateLeft(node->left);
             return rotateRight(node);
         }
-        if (balance < -1 && id < node->right->player_id) { // Right Left Case
+        if (balance < -1 && score < node->right->score) {
             node->right = rotateRight(node->right);
             return rotateLeft(node);
         }
@@ -95,7 +86,14 @@ private:
         return node;
     }
 
-    // Find the node with the minimum value
+    // Check for duplicate ID before insertion
+    bool isDuplicateID(Player* node, int id) {
+        if (node == nullptr) return false;
+        if (node->player_id == id) return true;
+        return isDuplicateID(node->left, id) || isDuplicateID(node->right, id);
+    }
+
+    // Find the node with minimum value
     Player* minValueNode(Player* node) {
         Player* current = node;
         while (current->left != nullptr)
@@ -107,39 +105,34 @@ private:
     Player* removePlayer(Player* root, int id) {
         if (root == nullptr) return root;
 
-        // Traverse to find the node to delete
         if (id < root->player_id)
             root->left = removePlayer(root->left, id);
         else if (id > root->player_id)
             root->right = removePlayer(root->right, id);
         else {
-            // Case 1: No child (leaf node)
             if (root->left == nullptr && root->right == nullptr) {
                 delete root;
                 return nullptr;
             }
-            // Case 2: One child
             if (root->left == nullptr) {
                 Player* temp = root->right;
                 delete root;
                 return temp;
-            } else if (root->right == nullptr) {
+            }
+            else if (root->right == nullptr) {
                 Player* temp = root->left;
                 delete root;
                 return temp;
             }
-            // Case 3: Two children
             Player* temp = minValueNode(root->right);
             root->player_id = temp->player_id;
             root->score = temp->score;
             root->right = removePlayer(root->right, temp->player_id);
         }
 
-        // Update height
         root->height = max(getHeight(root->left), getHeight(root->right)) + 1;
         int balance = getBalanceFactor(root);
 
-        // Perform rotations if unbalanced
         if (balance > 1 && getBalanceFactor(root->left) >= 0)
             return rotateRight(root);
         if (balance > 1 && getBalanceFactor(root->left) < 0) {
@@ -156,41 +149,40 @@ private:
         return root;
     }
 
-    // Display players in descending order of scores (Leaderboard)(Reverse Inorder Traversal)
+    // Display leaderboard in descending order (reverse inorder)
     void displayLeaderboard(Player* node) {
-        if (node == nullptr)
-            return;
+        if (node == nullptr) return;
         displayLeaderboard(node->right);
         cout << "Player ID: " << node->player_id << " | Score: " << node->score << endl;
         displayLeaderboard(node->left);
     }
 
 public:
-    // Constructor
     MultiplayerGame() {
         root = nullptr;
     }
 
-    // Register a new player
     void registerPlayer(int id, int score) {
+        if (isDuplicateID(root, id)) {
+            cout << "Player ID already exists! Try again.\n";
+            return;
+        }
         root = insertPlayer(root, id, score);
         cout << "Player registered successfully.\n";
     }
 
-    // Display the leaderboard
     void showLeaderboard() {
-        cout << "\nLeaderboard (Sorted by Score):\n";
+        cout << "\nLeaderboard (Sorted by Score Descending):\n";
         displayLeaderboard(root);
     }
 
-    // Remove a player by ID
     void removePlayerByID(int id) {
         root = removePlayer(root, id);
         cout << "Player removed successfully.\n";
     }
 };
 
-// Main Function
+// Main function
 int main() {
     MultiplayerGame game;
     int choice, player_id, score;
@@ -208,25 +200,21 @@ int main() {
                 cin >> score;
                 game.registerPlayer(player_id, score);
                 break;
-
             case 2:
                 game.showLeaderboard();
                 break;
-
             case 3:
                 cout << "Enter Player ID to remove: ";
                 cin >> player_id;
                 game.removePlayerByID(player_id);
                 break;
-
             case 4:
                 cout << "Exiting...\n";
                 break;
-
             default:
                 cout << "Invalid choice! Try again.\n";
         }
-    } while (choice != 4);  // Loop until user chooses to exit
+    } while (choice != 4);
 
     return 0;
 }
