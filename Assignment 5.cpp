@@ -71,22 +71,22 @@ public:
 int main() {
     // Adjacency matrix representing transportation costs between locations
     vector<vector<int>> supplyChainGraph = {
-        {0, 10, 0, 30, 100, 0}, // Supplier
-        {10, 0, 50, 0, 0, 20},  // Warehouse
-        {0, 50, 0, 20, 10, 0},  // Distribution Center 1
-        {30, 0, 20, 0, 60, 0},  // Distribution Center 2
-        {100, 0, 10, 60, 0, 50},// Retail Store 1
-        {0, 20, 0, 0, 50, 0}    // Retail Store 2
+        {0, 10, 0, 30, 100, 0}, // Warehouse1
+        {10, 0, 50, 0, 0, 20},  // Warehouse2
+        {0, 50, 0, 20, 10, 0},  // Warehouse3
+        {30, 0, 20, 0, 60, 0},  // Warehouse4
+        {100, 0, 10, 60, 0, 50},// Warehouse5
+        {0, 20, 0, 0, 50, 0}    // Warehouse6
     };
 
-    // Names corresponding to locations
+    // Updated names corresponding to locations
     vector<string> locationNames = {
-        "Supplier", "Warehouse", "Distribution Center 1", 
-        "Distribution Center 2", "Retail Store 1", "Retail Store 2"
+        "Warehouse1", "Warehouse2", "Warehouse3", 
+        "Warehouse4", "Warehouse5", "Warehouse6"
     };
 
     DijkstraSCM scm(supplyChainGraph, locationNames);
-    int source = 0; // Start from "Supplier"
+    int source = 0; // Start from Warehouse1
     scm.findShortestPath(source);
 
     return 0;
