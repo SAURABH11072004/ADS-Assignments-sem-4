@@ -110,10 +110,7 @@ private:
         else if (id > root->player_id)
             root->right = removePlayer(root->right, id);
         else {
-            if (root->left == nullptr && root->right == nullptr) {
-                delete root;
-                return nullptr;
-            }
+         
             if (root->left == nullptr) {
                 Player* temp = root->right;
                 delete root;
