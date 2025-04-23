@@ -25,13 +25,13 @@ public:
     }
 
     // Find function for Disjoint Set
-    int find(vector<int> &parent, int i) {
+    int find(vector<int>& parent, int i) {
         if (parent[i] == -1) return i;
         return parent[i] = find(parent, parent[i]);
     }
 
     // Union function for Disjoint Set
-    void unionSet(vector<int> &parent, vector<int> &rank, int u, int v) {
+    void unionSet(vector<int>& parent, vector<int>& rank, int u, int v) {
         int rootU = find(parent, u);
         int rootV = find(parent, v);
         
@@ -56,20 +56,23 @@ public:
         vector<vector<int>> mst; // Store {u, v, weight}
         int totalDistance = 0;
 
-        for (auto &edge : edges) {
-            int weight = edge[0], u = edge[1], v = edge[2];
+        for (int i = 0; i < edges.size(); ++i) {
+            int weight = edges[i][0];
+            int u = edges[i][1];
+            int v = edges[i][2];
+
             if (find(parent, u) != find(parent, v)) {
                 unionSet(parent, rank, u, v);
-                mst.push_back({u, v, weight}); // Include weight
+                mst.push_back({u, v, weight});
                 totalDistance += weight;
             }
         }
 
         // Print MST with department names
         cout << "Minimum Spanning Tree (MST) of College Campus:\n";
-        for (auto &e : mst) {
-            cout << departments[e[0]] << " - " << departments[e[1]] 
-                 << "  Distance: " << e[2] << " meters\n";
+        for (int i = 0; i < mst.size(); ++i) {
+            cout << departments[mst[i][0]] << " - " << departments[mst[i][1]] 
+                 << "  Distance: " << mst[i][2] << " meters\n";
         }
         cout << "Total Minimum Distance: " << totalDistance << " meters\n";
     }
@@ -78,11 +81,11 @@ public:
 int main() {
     // Given adjacency matrix
     int inputGraph[V][V] = {
-        { 0, 2, 0, 6, 0 },//CS
-        { 2, 0, 3, 8, 5 },//IT
-        { 0, 3, 0, 0, 7 },//ENTC
-        { 6, 8, 0, 0, 9 },//AIML
-        { 0, 5, 7, 9, 0 }//MECH
+        { 0, 2, 0, 6, 0 },  // CS
+        { 2, 0, 3, 8, 5 },  // IT
+        { 0, 3, 0, 0, 7 },  // ENTC
+        { 6, 8, 0, 0, 9 },  // AIML
+        { 0, 5, 7, 9, 0 }   // MECH
     };
 
     // Department names
